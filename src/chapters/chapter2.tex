@@ -5,8 +5,17 @@
 \setcounter{secnumdepth}{0} % Set the section counter to 0 so next section is not counted in toc
 % ----------------------- Introduction ----------------------- %
 \section{Introduction}
-This chapter will present and study various concepts such as browser automation, web scraping, version control and DevOps with an emphasis on key DevOps terminologies.
-We will talk about the most used tools in the market as well as which ones we settled on after making a comparison.
+This chapter examines the core concepts and technologies that underpin our
+internship project: DevOps culture, containerization, infrastructure as code,
+CI/CD pipelines, and cloud-native deployment strategies. We begin by defining
+these foundational practices and then conduct a comparative analysis of the
+tools available in each domain, from version control systems to container
+orchestration platforms and cloud providers.
+
+The objective is twofold: first, to establish a clear theoretical grounding
+for the reader; and second, to justify the technical choices made throughout
+this project by evaluating each option against the specific requirements of
+migrating a monolithic application to a scalable, cloud-based infrastructure.
 
 \setcounter{secnumdepth}{2} % Resume counting the sections for the toc with a depth of 2 (Sections and sub-sections)
 % ----------------------------------- SECTIONS (v) ----------------------------------- %
@@ -14,26 +23,77 @@ We will talk about the most used tools in the market as well as which ones we se
 \section{DevOps}
 
 \subsection{Definition}
-\lipsum[2][1]
+
+DevOps is a set of practices, techniques, and methodologies designed to accelerate
+the Software Development Lifecycle (SDLC) by bridging the gap between software
+development and IT operations. Development focuses on writing and improving the
+software, while operations handle the provisioning, configuration, and maintenance
+of the infrastructure that runs the applications.
+
+In the context of our internship, DevOps practices are essential for migrating the
+company’s monolithic system from a single virtual machine to a scalable cloud-based
+infrastructure. By applying DevOps principles, we aim to automate deployment,
+monitoring, and maintenance processes, ensuring that the application can scale
+efficiently as the number of users increases.
+
+Key concepts in DevOps include Continuous Integration (CI), Continuous Delivery (CD),
+Infrastructure as Code (IaC), and automation of repetitive tasks. Leveraging these
+principles allows development and operations teams to work collaboratively, reduce
+errors, and deliver software updates reliably and continuously, which is crucial for
+supporting a growing customer base and improving overall service quality.
 
 \subsection{Lifecycle}
-\lipsum[2][1]
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth]{\includegraphics[width=12cm]{src/assets/images/devops-lifecycle.png}}
+    \caption{DevOps and the application lifecycle}
+    \label{fig:devops-lifecycle}
+\end{figure}
+
+DevOps -according to Microsoft Azure- is the main influencer of the application lifecycle throughout its plan, develop, deliver, and operate phases. All of the phases rely on one another and they are not role-specific. In a true DevOps culture, each role is involved in each phase to some extent. \cite{devops}
+
+\begin{itemize}
+    \item \textbf{Plan:} In this first stage, DevOps teams define and describe the main features of the system being created. They accomplish that by many ways. Some of which are creating backlogs, tracking bugs, using Kanban boards and visualizing progress with dashboards.
+    \item \textbf{Develop:} This step includes all aspects of coding, testing, reviewing and code integration. It also includes creating build artifacts that can be deployed into various environments. Automation of mundane and manual tasks plays a heavy role in this phase through automated testing and continuous integration.
+    \item \textbf{Deliver:} This is the process of deploying application into various environments such as staging or production consistently and reliably. It also includes deploying and configuring the infrastructure that makes up the environments. The DevOps team defines a release management process with automated gates or checkpoints the move the applications between stages in order to deploy in an efficient, scalable, repeatable and controllable way.
+    \item \textbf{Operate:} The operate phase involves maintaining, monitoring and troubleshooting the application in the production environment. The purpose of this phase is ensuring high availability, system reliability and zero downtime. This requires alerting and full visibility into the application.
+\end{itemize}
+
 
 \subsection{Container management}
-\lipsum[2][1]
+Containers have become an integral part of DevOps over the past couple of years but what are containers exactly and how do we manage them?
 
 \subsubsection*{What is a container ?}
-\lipsum[2][1]
+Simply said; container is a packaging format for software applications that are akin to a very lightweight virtual machine (very broad analogy) which always executes in an isolated environment \cite{what-is-a-container}.
+What this implies is that said containers can be easily copied to and run on different machines with high reliability, lower costs and high efficiency.
 
 \subsubsection*{What is container management ?}
-\lipsum[2][1]
+Container management is the process for automating the creation, deployment and scaling of containers \cite{container-management}.
+Container management tools such as Docker and Podman facilitate the addition, replacement and organization of containers.
 
 \subsection{CI/CD pipelines}
-\lipsum[2][1]
+A continuous integration and continuous deployment (CI/CD) pipeline is a series of steps that must be performed in order to deliver a new version of software.
+CI/CD pipelines are a practice focused on improving software delivery throughout the software development life cycle via automation. \cite{cicd-definition}
+
+\subsection{Infrastructure as Code}
+Infrastructure as Code (IaC) is the practice of managing and provisioning computing infrastructure through machine-readable definition files rather than through manual processes or interactive configuration tools \cite{iac-definition}. Instead of manually configuring servers, networks, and services through a cloud provider's console, engineers write declarative or imperative code that describes the desired state of the infrastructure.
+
+IaC brings software engineering practices to infrastructure management: version control, code review, testing, and reproducibility. This means that an entire cloud environment can be created, modified, or destroyed consistently and repeatedly from the same set of configuration files. In the context of our project, IaC is essential for provisioning the AWS resources that host the application, ensuring that environments can be reliably recreated and that infrastructure changes are auditable and reversible.
+
+\subsection{GitOps}
+GitOps is an operational framework that extends Infrastructure as Code principles by using Git as the single source of truth for both infrastructure and application configurations \cite{gitops-definition}. In a GitOps workflow, the desired state of the system is declared in a Git repository, and an automated agent running inside the cluster continuously reconciles the actual state with the declared state.
+
+This approach provides several benefits: every change is versioned and auditable through Git history, rollbacks are as simple as reverting a commit, and the deployment process becomes declarative rather than imperative. GitOps eliminates the need for direct cluster access during deployments, which improves both security and reliability.
 
 % ----------------------- Comparative Analysis ----------------------- %
 \section{Comparative Analysis}
-In order to get started with our project, we need a wide range of tools that deal with the following areas; version control, orchestration between containers, browser automation as well as scheduled automation. For that, we did a comparative study on some of the tools the market provides.
+To implement a scalable and automated infrastructure, a range of tools is
+required for version control, container management, deployment orchestration,
+and cloud provisioning. In this section, we provide a comparative study of
+widely used tools and cloud platforms in the industry, highlighting their
+main characteristics and advantages. This analysis allows us to identify
+which solutions are most suitable for modernizing and automating the
+deployment of applications in cloud environments.
 
 \subsection{Version Control: Git vs SVN}
 The most used tools for version control are Git and SVN. Here is a table comparing both tools.
@@ -55,7 +115,7 @@ The most used tools for version control are Git and SVN. Here is a table compari
         \hline
     \end{tabularx}
 \end{table}
-In the end, both are great options. However, we will be using Git since the company already has a self-hosted GitLab instance that naturally uses Git.
+In the end, both are great options. However, Git has become the industry standard due to its flexibility and support for distributed workflows. In our case, Git will be used because the company’s code is already hosted on GitHub, making it the natural choice for version control.
 
 \subsection{Container management: Docker vs Podman}
 Although Docker is widely popular, Podman is also taking its share from the market. Especially on Red Hat systems.
@@ -117,11 +177,12 @@ Our research leads us to choosing between either Docker Swarm or Kubernetes.
 \end{table}
 Therefore, we will be deploying our application stack to Kubernetes since the potential is huge compared to the deprecated Docker Swarm.
 
-\subsection{Deployment management: Kubectl vs Helm}
-Since we're using Kubernetes, we have the option to deploy our microservices either with Kubectl or with Helm.
+\subsection{Kubernetes Configuration: Kustomize vs Helm}
+When deploying applications to Kubernetes, two dominant approaches exist for managing manifests across multiple environments: Kustomize and Helm. Both solve the problem of environment-specific configuration but take fundamentally different approaches.
+
 \begin{table}[H]
     \renewcommand{\arraystretch}{1.5}%
-    \caption{Comparative study between Kubectl and Helm}
+    \caption{Comparative study between Kustomize and Helm}
     \centering
     \medskip
     \begin{tabularx}{1\textwidth} {
@@ -129,20 +190,149 @@ Since we're using Kubernetes, we have the option to deploy our microservices eit
             | >{\hsize=1.15\hsize\linewidth=\hsize\justifying\arraybackslash}X
             | >{\hsize=1.15\hsize\linewidth=\hsize\justifying\arraybackslash}X |}
         \hline
-        \rowcolor{primary} \textbf {Aspect} & \textbf{Kubectl}                                                                                                                                                                                                                     & \textbf{Helm}                                                                                                                                                                                                                                           \\
+        \rowcolor{primary} \textbf {Aspect} & \textbf{Kustomize}                                                                                                                                                                                                                     & \textbf{Helm}                                                                                                                                                                                                                                           \\
         \hline
-        \textbf {Overview}                  & \noindent Kubectl is the official Kubernetes command-line tool that allows running commands against Kubernetes clusters.                                                                                                             & \noindent Helm -in a nutshell- is the package manager for Kubernetes.                                                                                                                                                                                   \\
+        \textbf {Approach}                  & \noindent Kustomize uses a template-free overlay system. Base manifests are written as plain Kubernetes YAML, and environment-specific patches are layered on top without modifying the originals.                                                                                                             & \noindent Helm is a package manager for Kubernetes that uses Go templates. Charts bundle templated manifests with configurable values, allowing parameterized deployments.                                                                                                                                                                                   \\
         \hline
-        \textbf {In depth}                  & \noindent Kubectl can be used to deploy applications, inspect and manage cluster resources and also view logs. It also provides many other advanced functionality such as node tainting or setting up strategies for load balancing. & \noindent Helm helps in defining, installing and upgrading the most complex Kubernetes applications. Helm templates also provide a very clean way to avoid code duplication between similar resources in applications, such as services or deployments. \\
+        \textbf {Advantages}                & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Built into kubectl (no extra tooling)
+            \item Plain YAML with no templating syntax
+            \item Native ArgoCD integration
+            \item Clear separation between base and overlays
+        \end{itemize} & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Rich ecosystem of pre-built charts
+            \item Powerful templating for complex logic
+            \item Built-in release management and rollback
+            \item Well suited for packaging third-party applications
+        \end{itemize}                                                \\
+        \hline
+        \textbf {Disadvantages}             & \noindent Limited when complex conditional logic is needed; less suitable for distributing reusable packages to external users.                                                                                                                                                                                                        & \noindent Templating syntax adds complexity and can make manifests harder to read and debug. Requires learning a separate tool. \\
         \hline
     \end{tabularx}
 \end{table}
-Thoroughly studying our use case, we agreed to create a uniform Helm package to ship our microservices.
-We also deemed it necessary to have some common configuration that we simply apply with Kubectl such as Ingress rules or letsencrypt certificates for convenience purposes and due to the lack of time.
+For our project, Kustomize was chosen as the primary configuration management tool. Its overlay-based approach maps naturally to our multi-environment architecture (staging and production namespaces), integrates natively with ArgoCD for GitOps deployments, and keeps manifests readable as plain Kubernetes YAML without introducing templating complexity.
+
+\subsection{Cloud Providers: AWS vs Azure vs GCP}
+Modern scalable applications rely on cloud platforms to provide on-demand
+resources, high availability, and automated infrastructure management. The
+three leading providers are Amazon Web Services (AWS), Microsoft Azure,
+and Google Cloud Platform (GCP). Each offers a wide range of services for
+compute, storage, networking, monitoring, and deployment automation.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.5}%
+    \caption{Comparative study between AWS, Azure, and GCP}
+    \centering
+    \medskip
+    \begin{tabularx}{\textwidth} {
+            | >{\centering\arraybackslash}p{2cm}
+            | >{\justifying\arraybackslash}X
+            | >{\justifying\arraybackslash}X
+            | >{\justifying\arraybackslash}X |}
+        \hline
+        \rowcolor{primary} \textbf{Aspect} & \textbf{AWS} & \textbf{Azure} & \textbf{GCP} \\
+        \hline
+        \textbf{Overview} & AWS is the most mature and widely adopted cloud platform, offering a comprehensive ecosystem of services. & Azure integrates tightly with Microsoft products and enterprise environments, making it ideal for companies using Windows-based infrastructures. & GCP is known for strong data analytics, AI/ML services, and competitive pricing for compute and storage. \\
+        \hline
+        \textbf{Advantages} & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Largest service ecosystem
+            \item Mature DevOps and deployment tools
+            \item Global reach and reliability
+        \end{itemize} & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Strong integration with Microsoft software
+            \item Enterprise-friendly security and compliance
+            \item Hybrid cloud support
+        \end{itemize} & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Advanced data analytics and AI/ML capabilities
+            \item Competitive pricing for compute and storage
+            \item Fast-growing ecosystem with strong Kubernetes support
+        \end{itemize} \\
+        \hline
+        \textbf{Disadvantages} & Cost can be high for small deployments; complexity can be overwhelming. & Smaller ecosystem than AWS; some services lag behind AWS in features. & Smaller global infrastructure; fewer enterprise integrations than AWS or Azure. \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+All three providers support the core requirements of scalable, automated,
+and highly available applications. For our internship project, AWS was chosen
+due to the company’s existing usage of its services, team familiarity, and
+strong ecosystem for DevOps and cloud-native practices.
+
+\subsection{CI/CD Platforms: GitHub Actions vs Jenkins}
+Automating the build, test, and deployment pipeline is central to any DevOps workflow. Two widely adopted CI/CD platforms are GitHub Actions and Jenkins.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.5}%
+    \caption{Comparative study between GitHub Actions and Jenkins}
+    \centering
+    \medskip
+    \begin{tabularx}{1\textwidth} {
+            | >{\hsize=.7\hsize\linewidth=\hsize\centering\arraybackslash}X
+            | >{\hsize=1.15\hsize\linewidth=\hsize\justifying\arraybackslash}X
+            | >{\hsize=1.15\hsize\linewidth=\hsize\justifying\arraybackslash}X |}
+        \hline
+        \rowcolor{primary} \textbf {Aspect} & \textbf{GitHub Actions}                                                                                                                                                                                                                     & \textbf{Jenkins}                                                                                                                                                                                                                                           \\
+        \hline
+        \textbf {Overview}                  & \noindent A cloud-native CI/CD platform built directly into GitHub. Workflows are defined as YAML files within the repository and executed on GitHub-hosted or self-hosted runners.                                                                                                             & \noindent An open-source automation server that has been the industry standard for CI/CD for over a decade. It is self-hosted and highly extensible through a vast plugin ecosystem.                                                                                                                                                                                   \\
+        \hline
+        \textbf {Advantages}                & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Zero infrastructure to manage (cloud-hosted)
+            \item Native integration with GitHub repositories
+            \item Generous free tier for public and private repos
+            \item Large marketplace of reusable actions
+        \end{itemize} & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Fully customizable and self-hosted
+            \item Thousands of plugins for any integration
+            \item Complete control over the build environment
+            \item Mature and battle-tested in enterprise settings
+        \end{itemize}                                                \\
+        \hline
+        \textbf {Disadvantages}             & \noindent Limited customization compared to self-hosted solutions; execution minutes are capped on the free tier.                                                                                                                                                                                                        & \noindent Requires dedicated infrastructure and ongoing maintenance; initial setup and plugin management can be complex. \\
+        \hline
+    \end{tabularx}
+\end{table}
+GitHub Actions was selected for our project because the company’s source code is already hosted on GitHub, eliminating the need for additional infrastructure. Its native integration with GitHub Container Registry (GHCR) and seamless triggering on push events make it the most cost-effective and practical choice for our use case.
+
+\subsection{Infrastructure as Code: Terraform vs CloudFormation}
+For provisioning cloud resources through code, two leading tools are Terraform and AWS CloudFormation.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.5}%
+    \caption{Comparative study between Terraform and CloudFormation}
+    \centering
+    \medskip
+    \begin{tabularx}{1\textwidth} {
+            | >{\hsize=.7\hsize\linewidth=\hsize\centering\arraybackslash}X
+            | >{\hsize=1.15\hsize\linewidth=\hsize\justifying\arraybackslash}X
+            | >{\hsize=1.15\hsize\linewidth=\hsize\justifying\arraybackslash}X |}
+        \hline
+        \rowcolor{primary} \textbf {Aspect} & \textbf{Terraform}                                                                                                                                                                                                                     & \textbf{CloudFormation}                                                                                                                                                                                                                                           \\
+        \hline
+        \textbf {Overview}                  & \noindent An open-source IaC tool by HashiCorp that uses the declarative HCL language. It supports multiple cloud providers through a plugin-based provider system.                                                                                                             & \noindent AWS’s native IaC service that provisions and manages AWS resources using JSON or YAML templates. It is tightly integrated with the AWS ecosystem.                                                                                                                                                                                   \\
+        \hline
+        \textbf {Advantages}                & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Cloud-agnostic (supports AWS, Azure, GCP, etc.)
+            \item Modular structure with reusable modules
+            \item Plan command previews changes before applying
+            \item Large community and extensive provider ecosystem
+        \end{itemize} & \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=1pt, parsep=2pt]
+            \item Deep AWS integration with no extra tooling
+            \item Automatic rollback on deployment failures
+            \item Free to use (pay only for provisioned resources)
+            \item Drift detection built in
+        \end{itemize}                                                \\
+        \hline
+        \textbf {Disadvantages}             & \noindent State file management requires careful handling; the HCL language has its own learning curve.                                                                                                                                                                                                        & \noindent Locked to AWS only; verbose template syntax; slower to adopt new AWS features compared to Terraform providers. \\
+        \hline
+    \end{tabularx}
+\end{table}
+Terraform was chosen for our project due to its cloud-agnostic nature, which avoids vendor lock-in and allows the infrastructure knowledge to transfer across providers. Its modular architecture and the ability to preview changes with \texttt{terraform plan} before applying them provide an additional layer of safety when managing production infrastructure.
+
 % ----------------------------------- SECTIONS (^) ----------------------------------- %
 
 \setcounter{secnumdepth}{0} % Set the section counter to 0 so next section is not counted in toc
 % ----------------------- Conclusion ----------------------- %
 \section{Conclusion}
-In this chapter, we discussed the main concepts relevant to our project such as web scraping, automation and DevOps.
-Then we talked about some of the tools in the market and discussed some of our choices.
+In this chapter, we established the theoretical and technical foundations for our project by examining DevOps practices, containerization, infrastructure as code, CI/CD pipelines, and GitOps principles. We then conducted a comparative analysis of the tools available in each domain: Git for version control, Docker for containerization, Kubernetes for orchestration, Kustomize for configuration management, GitHub Actions for CI/CD, Terraform for infrastructure provisioning, and AWS as the cloud platform.
+
+Each choice was justified against the specific requirements of our project: migrating a monolithic application to a scalable, cloud-native architecture while optimizing for cost, maintainability, and automation. These tools and practices form the technical stack that will be implemented in the subsequent chapters.
