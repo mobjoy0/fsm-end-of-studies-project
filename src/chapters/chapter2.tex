@@ -1,4 +1,4 @@
-\chapter{State of the art}
+\chapter{Architecture And Design}
 \minitoc
 \newpage
 
@@ -20,27 +20,15 @@ migrating a monolithic application to a scalable, cloud-based infrastructure.
 \setcounter{secnumdepth}{2} % Resume counting the sections for the toc with a depth of 2 (Sections and sub-sections)
 % ----------------------------------- SECTIONS (v) ----------------------------------- %
 % ----------------------- DevOps ----------------------- %
-\section{DevOps}
+\section{The DevOps Paradigm}
 
 \subsection{Definition}
 
-DevOps is a set of practices, techniques, and methodologies designed to accelerate
-the Software Development Lifecycle (SDLC) by bridging the gap between software
-development and IT operations. Development focuses on writing and improving the
-software, while operations handle the provisioning, configuration, and maintenance
-of the infrastructure that runs the applications.
+DevOps represents a fundamental cultural and technical shift designed to accelerate the Software Development Lifecycle (SDLC) by bridging the gap between software engineering and IT operations. While development focuses on iterating and improving the application layer, operations manage the provisioning, security, and scalability of the underlying infrastructure.
 
-In the context of our internship, DevOps practices are essential for migrating the
-company’s monolithic system from a single virtual machine to a scalable cloud-based
-infrastructure. By applying DevOps principles, we aim to automate deployment,
-monitoring, and maintenance processes, ensuring that the application can scale
-efficiently as the number of users increases.
+Prior to this project, the startup's existing footprint consisted of a simple website hosted on a single Amazon EC2 (Elastic Compute Cloud) instance. However, the core product under development is a complex, distributed system comprising multiple frontends (Vue.js and React), a robust backend (NestJS), and resource-intensive 3D AI generative models. A single-VM infrastructure is entirely insufficient for this architecture; it lacks isolated scaling, introduces a single point of failure, and requires manual deployment interventions.
 
-Key concepts in DevOps include Continuous Integration (CI), Continuous Delivery (CD),
-Infrastructure as Code (IaC), and automation of repetitive tasks. Leveraging these
-principles allows development and operations teams to work collaboratively, reduce
-errors, and deliver software updates reliably and continuously, which is crucial for
-supporting a growing customer base and improving overall service quality.
+Therefore, applying DevOps practices in this context is not merely an optimization, but a foundational necessity. The objective is to architect a highly scalable, automated, cloud-native infrastructure from scratch that can support a distributed application suite.
 
 \subsection{Lifecycle}
 \begin{figure}[H]
@@ -50,16 +38,20 @@ supporting a growing customer base and improving overall service quality.
     \label{fig:devops-lifecycle}
 \end{figure}
 
-DevOps -according to Microsoft Azure- is the main influencer of the application lifecycle throughout its plan, develop, deliver, and operate phases. All of the phases rely on one another and they are not role-specific. In a true DevOps culture, each role is involved in each phase to some extent. \cite{devops}
-
+According to Microsoft Azure, the DevOps lifecycle operates as a continuous loop spanning four primary phases: Plan, Develop, Deliver, and Operate. To successfully build and maintain this new multi-component system, these phases must rely heavily on extreme automation:
 \begin{itemize}
-    \item \textbf{Plan:} In this first stage, DevOps teams define and describe the main features of the system being created. They accomplish that by many ways. Some of which are creating backlogs, tracking bugs, using Kanban boards and visualizing progress with dashboards.
-    \item \textbf{Develop:} This step includes all aspects of coding, testing, reviewing and code integration. It also includes creating build artifacts that can be deployed into various environments. Automation of mundane and manual tasks plays a heavy role in this phase through automated testing and continuous integration.
-    \item \textbf{Deliver:} This is the process of deploying application into various environments such as staging or production consistently and reliably. It also includes deploying and configuring the infrastructure that makes up the environments. The DevOps team defines a release management process with automated gates or checkpoints the move the applications between stages in order to deploy in an efficient, scalable, repeatable and controllable way.
-    \item \textbf{Operate:} The operate phase involves maintaining, monitoring and troubleshooting the application in the production environment. The purpose of this phase is ensuring high availability, system reliability and zero downtime. This requires alerting and full visibility into the application.
+    \item \textbf{Develop (Continuous Integration):} Replacing manual code testing with Continuous Integration (CI) pipelines that autonomously validate code across the various frontend and backend repositories, packaging them into standardized container images.
+    \item \textbf{Deliver (Continuous Deployment):} Transitioning from manual server updates to automated deployment mechanisms. Managing multiple distributed services forces a critical architectural decision between traditional push-based deployments and modern pull-based "GitOps" methodologies.
+    \item \textbf{Operate (Infrastructure as Code):} Eliminating the manual configuration of cloud resources by adopting Infrastructure as Code (IaC), ensuring the new distributed environment is reproducible, auditable, and dynamically scalable.
 \end{itemize}
-
-
+% Usage example
+% \begin{lstlisting}[language=yaml]
+%     stages:
+%       - test
+%       - buildPublish
+%       - deploy
+% \end{lstlisting}
+%\begin{referances}
 \subsection{Container management}
 Containers have become an integral part of DevOps over the past couple of years but what are containers exactly and how do we manage them?
 
@@ -84,7 +76,7 @@ IaC brings software engineering practices to infrastructure management: version 
 GitOps is an operational framework that extends Infrastructure as Code principles by using Git as the single source of truth for both infrastructure and application configurations \cite{gitops-definition}. In a GitOps workflow, the desired state of the system is declared in a Git repository, and an automated agent running inside the cluster continuously reconciles the actual state with the declared state.
 
 This approach provides several benefits: every change is versioned and auditable through Git history, rollbacks are as simple as reverting a commit, and the deployment process becomes declarative rather than imperative. GitOps eliminates the need for direct cluster access during deployments, which improves both security and reliability.
-
+\end{referances}
 % ----------------------- Comparative Analysis ----------------------- %
 \section{Comparative Analysis}
 To implement a scalable and automated infrastructure, a range of tools is
