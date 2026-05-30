@@ -35,3 +35,12 @@ chapter 2 in ch3
 
 currr just before 1.3.3
 
+1.3.2
+talbe 
+1.3.3
+layer objectives are desceibed above
+
+2.3
+summarize
+highlight the subsections
+

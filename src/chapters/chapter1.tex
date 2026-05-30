@@ -6,37 +6,34 @@
 % ----------------------- Introduction ----------------------- %
 \section{Introduction}
 This chapter introduces the general context of this report.
-We start by presenting the frame of the project as well as the host company.
-Then comes the enumeration of the problems which led to the realization of the project.
-We wrap it up by defining the methodology we've followed to carry out our work.
+We start by presenting the internship framework and the host company.
+We then identify the limitations of the existing setup that motivated this project.
+Finally, we describe the development approach adopted to carry it out.
 
 \setcounter{secnumdepth}{2}
 % ----------------------- General framework of the internship ----------------------- %
 \section{General framework of the internship}
 This project was carried out within the frame of obtaining a bachelor's degree in Computer Science at the Faculty of Science of Monastir (FSM), Tunisia.
-The internship took place over 4 months at Mashroom, an innovative early-stage startup focused on 3D product visualization services. The internship aimed to build a complete, scalable cloud infrastructure from scratch to support the platform's growth and implement modern DevOps and GitOps principles.
+The internship took place over 4 months at The Mashroom, an innovative early-stage startup focused on 3D product visualization services.
+This section introduces the host company {\bf The Mashroom} as well as the services it offers.
 
-% ----------------------- Company overview ----------------------- %
-\subsection{Company overview}
-This section introduces the host company {\bf Mashroom} as well as the services it offers.
-
-\subsection{About Mashroom}
-Mashroom is an innovative platform that enables businesses to easily create, style, and publish beautiful 3D product visuals on demand.
-The platform significantly reduces costs and production time compared to traditional photography shoots.
-Mashroom combines human design expertise with cutting-edge technology to help companies showcase their products in stunning, hyperrealistic 3D renders.
+\subsection{About The Mashroom}
+The Mashroom is an innovative company that enables businesses to easily create, style, and publish beautiful 3D product 
+visuals on demand. The company significantly reduces costs and production time compared to traditional photography shoots. 
+The Mashroom combines human design expertise with cutting-edge technology to help companies showcase their products in stunning, hyperrealistic 3D renders.
 
 \begin{figure}[H]
     \centering
     \makebox[\textwidth]{\includegraphics[width=12cm]{src/assets/logos/mashroom.png}}
-    \caption{Logo of Mashroom}
+    \caption{Logo of The Mashroom}
     \label{fig:logo-of-mashroom}
 \end{figure}
 
-\subsection{Mashroom's Services}
-Mashroom's offering is built around two complementary services: one focused on producing high-quality 3D renders from product photographs, and the other providing a digital environment for managing and reusing this content.
+\subsection{The Mashroom's Services}
+The Mashroom's offering is built around two complementary services: one focused on producing high-quality 3D renders from product photographs, and the other providing a digital environment for managing and reusing this content.
 
 \subsubsection*{\underline{3D Product Visualization}}
-Mashroom's core service delivers top-notch 3D product visualization by:
+The Mashroom's core service delivers top-notch 3D product visualization by:
 \begin{itemize}
     \item Accepting product photos from clients
     \item Producing hyperrealistic 3D renders that exceed expectations
@@ -55,79 +52,210 @@ The platform provides clients with:
 
 % ----------------------- Stating the problem ----------------------- %
 \section{Stating the problem}
-At the start of this internship, the company's entire software platform was running on a single virtual server rented from a cloud provider---an external company such as Amazon Web Services or Google Cloud that rents on-demand computing infrastructure. The two web interfaces seen by clients, the backend service that powered them, and the database that stored customer data all shared the same machine, with no separation between components and no second instance to fall back on. Releases were equally rudimentary: a developer would log into the server through a remote terminal session, pull the latest code, and restart the affected services by hand.
+At the beginning of the internship, the company's entire software platform (composed of 2 frontend applications, a backend application, and a database)
+was running on a \textbf{single server} hosted on a cloud provider, which rents servers and compute resources. Examples of cloud providers include Amazon Web Services \cite{aws} and Google Cloud \cite{gcp}.
+This single-machine setup introduced several limitations. There was no separation between components since they all shared the same resources, so if one of them had a new release the whole system would go down with it. A system administrator would have to remotely connect to the server, pull the latest code, and manually restart the affected services (frontend, backend, or database), which left room for human error at every step.
+\begin{figure}[H]
+    \centering
+    \makebox[\textwidth]{\includegraphics[width=0.6\linewidth]{src/assets/images/old-deployment.png}}
+    \caption{Legacy single-VM architecture}
+    \label{fig:legacy-single-vm-architecture}
+\end{figure}
 
-This setup had been good enough during the earliest stages of development, but as the company prepared to open the service to real customers, three limitations became impossible to ignore. The platform could not grow with demand, since a single machine has fixed memory and computing power: traffic spikes degraded performance for everyone, while idle periods cost the same fixed price. The release process offered no flexibility either---there was no way to apply changes automatically, no safety net to undo a faulty release, and no separate environment in which to test a change before exposing it to real users. Finally, reliability was effectively non-existent: the failure of that one machine would take down the entire platform at once, customer data included.
-
-Taken together, these limitations made it clear that incremental fixes would not be enough. The platform needed to be rebuilt on a different foundation---one capable of growing with demand, recovering from failure on its own, and absorbing the steady stream of changes that any real product receives. Defining and building that foundation became the core mission of this internship.
-
+This setup was sufficient during the early stages of development, but as the company was preparing to launch its services to real customers it could no longer handle more users due to limited machine resources. It was no longer reliable or flexible enough to support the upcoming release.
 % ----------------------- Assessment of the case ----------------------- %
 \section{Assessment of the case}
-Before designing a new infrastructure, we must understand precisely what the existing one fails to deliver, and whether the broader industry has already solved problems of this kind. The following subsections review the weaknesses of the current setup, survey the dominant paradigms used to host modern web platforms, and converge on the architectural direction adopted for the rest of this work.
+Before stepping into designing a new infrastructure, this section presents the current 
+system used by The Mashroom, the solutions commonly used in the industry for similar problems,
+and concludes with the architectural direction adopted for this project.
 
 \subsection{Criticizing the current state}
-The deficiencies that motivate the rest of this work fall into five distinct categories, each of which the new architecture will need to address explicitly.
+The Mashroom's platform is composed of several components, including frontend applications, 
+a backend service, and a database, each developed and deployed onto the same infrastructure. 
+In this setup, every change made to any component goes through a manual process: a developer 
+connects to the server, pulls the latest code, installs dependencies, and restarts the service. 
+This section analyzes the limitations of this current state and highlights the main issues 
+that need to be addressed.
+\begin{enumerate}
+    \item \textbf{Single point of failure:} every component of The Mashroom platform, 
+from the web interfaces (2 frontend applications) to the backend services and 
+the database, runs on the same machine. Any hardware failure, network issue, 
+or misconfiguration would take the entire platform offline at once, with no 
+automatic recovery in place.
 
-\begin{itemize}
-    \item \textbf{Single point of failure:} every part of the platform---both web interfaces, the backend service, and the database---ran on the same machine. Any hardware failure, network issue, or misconfiguration would take the entire service offline at once, with no automatic failover in place.
+    \item \textbf{No scalability:} the platform cannot handle more users without manual 
+intervention. Increasing capacity means provisioning a new server by hand and 
+reconfiguring the application to ensure it runs correctly on the new infrastructure. This process is far too slow to 
+react to real-time traffic spikes.
 
-    \item \textbf{No scalability:} the platform could not be made to serve more users without manual intervention. Increasing capacity meant provisioning a new server by hand and reconfiguring the application to run on it---a process far too slow to react to real-time fluctuations in demand.
+    \item \textbf{Manual deployments:} each release was carried out manually by a 
+developer connected to the server, who pulled the new code, installed its 
+dependencies, and restarted the running service. This process was slow, 
+inconsistent, error-prone, and offered no mechanism to revert a faulty release.
 
-    \item \textbf{Manual deployments:} each release was carried out step by step by a developer connected to the server, who pulled the new code, installed its dependencies, and restarted the running services in turn. The process was slow, inconsistent, error-prone, and offered no rollback mechanism if the release turned out to be faulty.
+    \item \textbf{No environment separation:} there was no dedicated environment in which to try a change before exposing it to real users. 
+    Every modification was applied directly to the live service, 
+    so any bug introduced during development was felt immediately by users.
 
-    \item \textbf{No environment separation:} there was no dedicated environment in which to try a change before exposing it to real users. Every modification was applied directly to the live service, so any bug introduced during development was felt immediately by customers.
+    \item \textbf{Unreproducible infrastructure:} the server had been configured by hand over 
+The Mashroom's development period with no record of the exact steps taken. 
+Rebuilding the same environment on a new machine would require reconstructing 
+the configuration piece by piece from scratch.
 
-    \item \textbf{Unreproducible infrastructure:} the server had been configured by hand over many months, and no record was kept of the exact steps that had been taken. Rebuilding the same environment on a fresh machine would have required reconstructing the configuration from memory, piece by piece.
-\end{itemize}
+    \item \textbf{High operational cost:} maintaining the current setup required 
+significant time from developers to handle deployments, debug infrastructure 
+issues, and manage the server manually. Combined with the cost of renting a 
+machine that could not scale to meet demand, the setup was neither time 
+efficient nor cost effective.
+\end{enumerate}
 
-Each of these categories becomes a non-negotiable requirement for the architecture proposed in the remainder of this chapter.
+These limitations directly shape the requirements that the new architecture 
+must satisfy.
+
 
 \subsection{Study of existing solutions}
-The requirements identified above mirror challenges that many young technology companies have faced over the past decade, and the industry has converged on a small number of recurring paradigms for hosting modern web platforms. Reviewing these paradigms---and the specific reasons each one falls short of the constraints listed in the previous subsection---clarifies the architectural direction that the rest of this work will pursue.
+This section reviews three widely used architectural and deployment approaches for modern web applications.
 
-\subsubsection*{\underline{Function-as-a-Service execution}}
-A first paradigm runs application logic as short-lived, event-triggered functions that an external runtime executes on demand---AWS Lambda is the canonical example, with Google's Cloud Functions and Microsoft's Azure Functions playing the same role on competing clouds. The model is attractive for sporadic, stateless workloads, but it cannot serve a platform like Mashroom's: the 3D rendering operations at the heart of the product run for tens of seconds and sometimes several minutes, well beyond the execution-time limits these runtimes enforce.
+\subsubsection*{\underline{Function-as-a-Service execution (FaaS) \cite{faas}}}
+The first approach is to run the application logic as short-lived functions 
+that are triggered by an event and executed on demand. AWS Lambda and Google 
+Cloud Functions are examples of this service offered by cloud providers. This 
+model is attractive for occasional workflows but it is not suited to serve 
+platforms like The Mashroom, since it is not meant to run for long periods of time 
+due to the execution time limits these services enforce. Additionally, it can 
+become costly for continuously running workloads, as pricing is based on 
+execution time and the number of requests.
 
 \subsubsection*{\underline{Fully managed container services}}
-A second paradigm relies on third-party services that accept a packaged, runnable application and operate it without exposing the underlying scheduling layer to the user. Heroku popularised this approach in the early 2010s, with more recent equivalents---Google Cloud Run, AWS App Runner, Render, Fly.io---occupying the same space. The convenience comes at a price: each service exposes a proprietary deployment description that does not translate to others, creating strong dependency on a single provider. Patterns this project depends on heavily---declarative continuous delivery, environment-specific configuration overlays, fine-grained autoscaling---are either unsupported or require workarounds that defeat the simplicity these services are sold on.
+A second approach relies on third-party services that accept a packaged container 
+and run it without requiring the developer to manage the underlying infrastructure 
+or servers. This approach was popularized in the early 2010s with platforms like 
+Heroku and Google App Engine \cite{heroku2011}, and its main advantage is convenience.
+However, this convenience comes with tradeoffs: these platforms charge a premium 
+for handling the infrastructure, and they offer little control over how the system 
+is configured and operated. For a platform like The Mashroom, this could mean higher 
+costs over time and a lack of flexibility when specific infrastructure decisions 
+are needed.
 
 \subsubsection*{\underline{Managed container orchestration}}
-A third paradigm runs the application on a cluster---a coordinated group of machines whose internal scheduling is handled by a piece of software called an orchestrator---operated as a service by the cloud provider. Kubernetes has overwhelmingly won this space, and every major provider now offers it as a managed service---Amazon's EKS, Google's GKE, Microsoft's AKS. This removes the burden of operating the orchestration layer itself while keeping the cluster portable across providers. The paradigm only solves part of the problem, however: the resources around the cluster (networks, databases, secret stores) are usually configured by hand through a web console, with no audit trail; changes to the cluster are typically applied from a developer's machine, with no automated rollback; and separating testing from production demands either two physically separate clusters or an explicit overlay strategy. Managed orchestration is therefore best understood as a strong foundation, not a complete answer.
+A third approach is to run the application on a coordinated group of machines 
+called a cluster, managed by a piece of software called an orchestrator. Every 
+major cloud provider now offers this as a managed service, examples of which 
+are Amazon's EKS \cite{aws_eks}, Google's GKE \cite{google_gke}, and 
+Microsoft's AKS \cite{microsoft_aks}. This removes the burden of operating 
+the orchestration layer but comes with an extra management charge. For a small 
+company without a dedicated infrastructure team, this option can quickly become 
+more expensive than the others.
 
-\subsubsection*{\underline{Synthesis}}
-No single paradigm meets all five requirements at a cost the company can afford, but the third comes closest. The architecture proposed here builds on managed orchestration and adds two further layers: one defining every supporting resource declaratively in version-controlled files, and one delivering application changes to the cluster automatically and reversibly. This combination has become the standard pattern at organisations facing the same constraints; the next subsection describes how it was instantiated for Mashroom.
 
-\subsection{Proposed solution}
-The architecture proposed for Mashroom's platform builds on the layered pattern described above. Each layer is instantiated to fit the company's constraints; the specific tools chosen at each layer are surveyed and justified in the next chapter.
+\subsection{Comparison and chosen direction}
+Table \ref{tab:infra-comparison} compares the three approaches against the 
+limitations identified in the current setup.
 
-\subsubsection*{\underline{From a single machine to a managed cluster}}
-The application is lifted off its single host onto a managed cluster. Each of the two web interfaces and the backend service is packaged so that it can run on any machine in the cluster. The orchestrator schedules these applications across the cluster, restarts them on failure, adds copies as load grows, and rolls out new versions one at a time, so the platform never goes fully offline during an update. A single cluster serves both production and a dedicated pre-production environment, kept apart by the cluster's own isolation mechanism rather than by duplicated infrastructure.
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Requirement} & \textbf{FaaS} & \textbf{Fully Managed} & \textbf{Managed Orchestration} \\
+\hline
+No single point of failure  & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} \\
+Scalability                 & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} \\
+Automated deployments       & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} \\
+Environment separation      & \textcolor{red}{\texttimes}           & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} \\
+Reproducible infrastructure & \textcolor{red}{\texttimes}           & \textcolor{orange}{\textasciitilde}    & \textcolor{green!60!black}{\checkmark} \\
+Full system control         & \textcolor{red}{\texttimes}           & \textcolor{red}{\texttimes}            & \textcolor{green!60!black}{\checkmark} \\
+Financial cost                          & \textit{Very High} & \textit{Medium} & \textit{High} \\
+
+\hline
+\end{tabular}
+\caption{Comparison of deployment approaches against The Mashroom's requirements}
+\label{tab:infra-comparison}
+\end{table}
+
+Although a fully managed container service offers a relatively lower operational 
+cost at the current application scale, its pricing grows rapidly as workloads 
+increase, which narrows the gap with managed container orchestration. With 
+The Mashroom's expected user growth and application expansion in mind, managed 
+orchestration becomes the more suitable choice, as it offers greater system 
+control while remaining cost effective and future proof in the long run.
+
+\section{Proposed solution}
+The limitations identified in the previous section are divided into three 
+complementary layers, each addressing a distinct set of the six weaknesses 
+discussed above. Together they directly resolve the identified shortcomings 
+and prepare The Mashroom for a smooth production launch.
+
+\subsubsection*{\underline{Container Orchestration Migration}}
+The application is migrated off its single virtual machine onto a managed 
+container orchestration cluster. Each component of The Mashroom platform, 
+the frontend applicatio ns, the backend services, and the database, is 
+packaged so that it can run consistently on any machine in the cluster. 
+The orchestrator handles the management of these components, ensuring they 
+remain available, recover from failure, and scale with demand. Both the 
+production and pre-production environments are hosted on the same cluster, 
+kept isolated from each other using the cluster's isolation mechanisms, 
+avoiding the additional cost and complexity of maintaining a separate cluster 
+for each environment.
 
 \subsubsection*{\underline{Reproducible cloud infrastructure}}
-Around the cluster sits a constellation of supporting resources: the network in which it lives, the database that stores customer data, the object storage that holds rendered assets, the load balancer that routes incoming traffic, and the secret store that keeps credentials. Each of these is described in declarative configuration files held in a version-controlled directory rather than configured by hand through the cloud provider's web console. This \emph{Infrastructure-as-Code} layer makes the setup auditable and reproducible: every modification is recorded alongside the source code, reviewable before it takes effect.
+The entire infrastructure is defined as code \cite{iac-definition}, meaning every component of the infrastructure is
+described in versioned files rather than configured by hand. This guarantees 
+that the infrastructure can be reproduced identically on any environment at 
+any time and that every change is tracked and auditable. Even sensitive 
+application credentials are handled in a structured and automated way, 
+removing any need for manual intervention when managing sensitive 
+configuration values.
+
 \subsubsection*{\underline{Automated and reversible delivery}}
-The third layer governs how changes reach the cluster. When a developer adds new code, an automated \emph{pipeline} (a sequence of steps triggered by every change) builds, tests, and packages the application. Rather than pushing the new build to the cluster directly, the pipeline updates a set of declarative configuration files describing what the cluster should look like and saves those updates to a version-controlled directory. A separate piece of software watches that directory and reconciles the cluster against it: whenever the files differ from what is actually running, it applies the difference. This indirection---known as \emph{GitOps}---makes deployments fully automated yet fully reversible: undoing a faulty change is no more than reverting the corresponding files. Differences between production and pre-production are handled by an \emph{overlay} mechanism that keeps a common base shared between the two and lets each environment override only what is strictly necessary. Before any change reaches the cloud, the same files are first applied to a local cluster running on the developer's machine, which catches configuration mistakes, broken service connectivity, or faulty overrides without cloud cost or risk to the live service.
+The third layer addresses how changes reach the cluster. When a developer 
+pushes new code, an automated sequence of steps is triggered to build, test,
+and package the application into a deployable unit. This sequence is called
+a pipeline \cite{cicd-definition}. Once the pipeline completes successfully, the changes are forwarded 
+to the cluster, which picks them up and applies the new version to the 
+appropriate environment. If a hidden problem surfaces after a release, the 
+faulty change can be undone and the application is restored to its last stable 
+version before the issue affects the majority of users. This makes the delivery 
+process fully automated yet fully reversible.
 
 \newpage
 
 % ----------------------- Development Methodology ----------------------- %
-\section{Development Methodology}
-
-Delivering this project within the four-month internship timeframe required a structured operational approach. This section outlines the methodology used to track, manage, and execute the infrastructure and automation tasks.
-\subsection{Adopting Kanban for DevOps Automation}
-
-Kanban is exceptionally well-suited for infrastructure automation due to its inherent flexibility and continuous workflow model [1]. This adaptability provides exactly what is needed in DevOps environments, where technical tasks are often unpredictable and require dynamic reprioritization based on system dependencies or sudden blockers. DevOps itself is a methodology that bridges software development and IT operations to streamline, manage, and automate cloud infrastructure [2]. By managing our work through a visual Kanban board---tracking tasks smoothly from \textit{To Do} through \textit{Done}---we maintained a steady operational flow without being constrained by rigid planning cycles.
+\section{Development Approach}
+In order to develop the proposed solution based on its basic objetives, we adopt the DevOps approach. DevOps is a set of practices that brings together software development and IT
+operations with the goal of shortening the delivery cycle and increasing
+reliability through automation. According to Microsoft Azure,
+the DevOps lifecycle operates as a continuous loop spanning four primary phases:
+Plan, Develop, Deliver, and Operate \cite{devops}.
 
 \begin{figure}[H]
     \centering
-    \makebox[\textwidth]{\includegraphics[width=\linewidth]{src/assets/screenshots/asana.png}}
+    \makebox[\textwidth]{\includegraphics[width=12cm]{src/assets/images/devops-lifecycle.png}}
+    \caption{DevOps and the application lifecycle}
+    \label{fig:devops-lifecycle}
+\end{figure}
+
+In this project, these phases map directly to the work carried out:
+\begin{itemize}
+    \item \textbf{Develop (Continuous Integration):} Replacing manual code testing with Continuous Integration (CI) \cite{cicd-definition} pipelines that autonomously validate code across the various frontend and backend repositories, packaging them into standardized container images.
+    \item \textbf{Deliver (Continuous Deployment):} Transitioning from manual server updates to automated deployment mechanisms. Managing multiple distributed services forces a critical architectural decision between traditional push-based deployments and modern pull-based "GitOps" \cite{gitops-definition} methodologies.
+    \item \textbf{Operate (Infrastructure as Code):} Eliminating the manual configuration of cloud resources by adopting Infrastructure as Code (IaC) \cite{iac-definition}, ensuring the new distributed environment is reproducible, auditable, and dynamically scalable.
+\end{itemize}
+
+DevOps work is rarely linear: tasks shift in priority, and blockers can appear
+at any stage. Kanban \cite{kanban} suits this well, since it focuses on continuous flow rather
+than fixed sprints, keeping work visible and moving at all times. Throughout the
+internship, all tasks were tracked on a Kanban board using Asana.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{src/assets/screenshots/asana.png}
     \caption{Project Kanban board on Asana}
     \label{fig:asana-kanban-board}
 \end{figure}
-
 
 \setcounter{secnumdepth}{0} % Set the section counter to 0 so next section is not counted in toc
 % ----------------------- Conclusion ----------------------- %
 \section{Conclusion}
 
-In this chapter, we presented not only the host organization but also the general context of the project and the critical need for a modern cloud architecture. We then evaluated the limitations of the existing single-server setup and discussed the possible development methodologies to manage this transition. Lastly, we selected the most ideal choice for our DevOps workflow, which is Kanban.
+In this chapter, we presented not only the host organization but also the general context of the project and the critical need for a modern cloud architecture. We then evaluated the limitations of the existing setup and discussed the development approache. Lastly, we selected the most ideal choice for our DevOps workflow, which is Kanban.

@@ -13,7 +13,7 @@ efficiency.
 
 It is within this context that our internship project was conceived. The company
 \textbf{The Mashroom} is currently developing a software solution whose infrastructure
-is still based on an outdated setup relying on a single virtual machine. In this
+is still based on an outdated setup relying on a single virtual machine (VM). In this
 configuration, the backend, frontend, and database all run on the same instance, which
 results in performance degradation, service interruptions, and operational limitations as
 the number of users increases. The growing demand on the platform has exposed clear
@@ -21,7 +21,7 @@ scalability limits, making the need for a modern, distributed, and cloud-ready i
 a strategic priority.
 
 The main objective of this project is therefore to migrate the existing system from its
-monolithic, single-server environment to a scalable cloud architecture capable of adapting
+monolithic, single virtual machine environment to a scalable cloud architecture capable of adapting
 to evolving workloads. This involves redesigning the deployment model, introducing
 service separation, ensuring proper communication between components, and establishing
 an automated workflow that improves reliability and accelerates delivery. In addition,
@@ -31,8 +31,8 @@ service.
 
 This report is structured to guide the reader through the different phases of the project.
 The first chapter introduces the general framework of the internship, outlines the company,
-and presents the problem at hand. The following chapters will progressively define the
-concepts related to modern cloud infrastructures, analyze the shortcomings of the old
+and presents the problem at hand. The following chapter will progressively defines the
+concepts related to modern cloud infrastructures, analyses the shortcomings of the old
 system, and detail the proposed architecture for the new environment. Finally, the last
 part of the report will focus on the implementation, describing the steps taken to rebuild
 the infrastructure, automate the delivery pipeline, and ensure that the platform is fully

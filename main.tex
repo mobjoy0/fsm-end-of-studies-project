@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{report}
+\documentclass[12pt,a4paper]{report}
 \input{./package.tex}
 \input{./src/components/glossary.tex}
 
@@ -16,11 +16,12 @@
 \setcounter{page}{1}
 
 % Dedication and acknowledgments
+\input{src/components/dedications.tex}
 % \input{src/components/dedications.tex} % Optional
 \input{src/components/acknowledgments.tex}
 
 % Abstract or TL;DR
-\input{src/components/abstract.tex}
+%\input{src/components/abstract.tex}
 
 % Print the acronyms list
 \printunsrtglossaries
@@ -52,7 +53,7 @@
 \setcounter{page}{0}
 
 % Very big diagrams, pictures or schemas go here
-\input{src/components/appendices.tex}
+%\input{src/components/appendices.tex}
 
 \end{document}
 % ------------- Document content ------------- %

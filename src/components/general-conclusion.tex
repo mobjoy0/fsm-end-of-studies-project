@@ -1,8 +1,29 @@
-\thispagestyle{plain} % Remove header
+\thispagestyle{plain}
 \addcontentsline{toc}{chapter}{General Conclusion}
 \section*{General Conclusion}
-\lipsum[2]
+This internship set out to address the infrastructure and deployment 
+limitations of the Mashroom platform, which previously relied on a 
+single virtual machine, manual deployments, and no environment 
+separation. The solution designed and implemented over the course 
+of this project replaces that setup with a containerized, 
+cloud-native architecture running on Amazon EKS, provisioned 
+entirely through Terraform, and delivered through a fully automated 
+CI/CD pipeline combining GitHub Actions and ArgoCD. The result is 
+a platform that is resilient, reproducible, and requires no manual 
+intervention from commit to deployment.
 
-\lipsum[1][1-25]
+Beyond the technical deliverables, this project was an opportunity 
+to apply DevOps principles in a real-world setting, navigating the 
+constraints of a production environment, making architectural 
+decisions under practical limitations, and delivering a solution 
+that is maintainable by the team long after the internship ends. 
+The infrastructure is fully documented as code, the pipelines are 
+self-explanatory by design, and the GitOps approach ensures that 
+the cluster state is always traceable back to a repository commit.
 
-\lipsum[2]
+That said, several aspects remain open for future improvement. 
+The cluster currently has no observability tool in place for 
+monitoring and alerting, making it difficult to detect and 
+diagnose issues in production. Setting up a dedicated monitoring 
+solution represents a natural next step toward a more mature 
+and production-ready platform.
